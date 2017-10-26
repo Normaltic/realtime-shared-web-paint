@@ -1,0 +1,11 @@
+.HideMenu {
+	background: black;
+	position: absolute;
+	bottom: 0;
+	right: 48%;
+	left: 48%;
+}
+
+.ShowMenu {
+	background: white;
+}
