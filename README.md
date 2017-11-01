@@ -10,7 +10,7 @@ back : socket-io, babel <br />
 다중페이지, 페이지별 preview 개발 <br />
 디자인 초안 적용 <br />
 
-##
+## 1.0
 webpack, server등 기초 환경 세팅 <br />
 socket을 통한 픽셀단위 공유 ( 개선 필요 ) <br />
 Canvas 기능 구현 ( Pen, Eraser, Rect, Circle ) <br />
