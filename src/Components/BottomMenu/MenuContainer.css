@@ -8,4 +8,33 @@
 
 .ShowMenu {
 	background: white;
+	position: absolute;
+	bottom: 0;
 }
+
+.BottomMenu {
+	position: fixed;
+	left: 0;
+	bottom: 0;
+	width: 80%;
+	background: #090909;
+	background: rgba(03,03,03,0.6);
+	white-space: nowrap;
+	overflow-x: auto;
+}
+
+.BottomMenu_addPage {
+	position: absolute;
+	top: 45%;
+	bottom: 0;
+	color: white;
+}
+
+.PreviewImgTag {
+	background: white;
+	margin-left: 2%;
+	margin-right: 2%;
+	margin-top: 2%;
+	margin-bottom: 2%;	
+}
+

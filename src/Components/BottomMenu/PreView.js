@@ -48,7 +48,10 @@ class PreView extends React.Component {
 
 	render() {
 		return (
-			<img src={this.props.pageData.preview} width='70' height='70'/>
+			<img className="PreviewImgTag" 
+				src={this.props.pageData.preview}
+				onClick={this.props.onClick}
+				width='192' height='108'/>
 		)
 	}
 }

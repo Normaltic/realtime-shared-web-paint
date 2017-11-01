@@ -60,7 +60,6 @@ export default (context) => {
 	};
 
 	const reDrawWithData = (item, animate) => {
-		let time = 0;
 		const j = item.points.length;
 		for(let i = 0; i < j; i++ ) {
 			if( !item.points[i-1] ) continue;

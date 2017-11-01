@@ -33,6 +33,7 @@ export default (context) => {
 		context.save();
 		context.beginPath();
 		context.strokeStyle = item.color;
+		context.lineWidth = item.size;
 		context.rect(startX, startY, width, height);
 		context.stroke();
 		context.restore();

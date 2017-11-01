@@ -1,0 +1,17 @@
+.ToolMenu {
+	position: fixed;
+	right: 0;
+	top: 10%;
+	width: 7%;
+	height: 70%;
+	display: inline-block;
+	background: #090909;
+	background: rgba(03,03,03,0.6);
+	text-align: center;
+}
+
+.ToolMenu_ToolIconBox {
+	display:inline-block;
+	margin-top: 5%;
+	margin-bottom: 5%;
+}

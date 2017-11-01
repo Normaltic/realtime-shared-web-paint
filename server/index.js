@@ -32,6 +32,10 @@ io.on('connection', (socket) => {
 		console.log(data.item.points.length);
 		socket.broadcast.emit('getonDrawItem', data);
 	});
+
+	socket.on('SendCreatePage', (data) => {
+		socket.broadcast.emit('getCreatePage', data);
+	});
 });
 
 const devServer = new WebpackDevServer(compiler, config.devServer);

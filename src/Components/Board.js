@@ -1,12 +1,15 @@
 import React from 'react';
 
+import io from 'socket.io-client';
 import { connect } from 'react-redux';
 import * as PageAction from '../reducers/Paints';
+import * as ToolAction from '../reducers/Tools';
 
 import Canvas, { toolMap } from './Canvas/Canvas';
 import tools from './Canvas/tools';
 
 import BottomMenu from './BottomMenu/MenuContainer';
+import ToolMenu from './ToolMenu/ToolMenu';
 
 class Board extends React.Component {
 	
@@ -14,11 +17,13 @@ class Board extends React.Component {
 		super(props);
 
 		this.state = {
-			tool: tools.TOOL_PENCIL
+			tool: tools.TOOL_PENCIL,
+			socket: io()
 		};
 
 		this.handleTool = this.handleTool.bind(this);
 	}
+
 
 	handleTool(toolName) {
 		this.setState({
@@ -34,15 +39,15 @@ class Board extends React.Component {
 					pageData={this.props.pageData}
 					pushItem={this.props.pushItem}
 					updatePreview={this.props.updatePreview}
-					tool={this.state.tool}/>
-				<button onClick={ () => this.handleTool(tools.TOOL_PENCIL)}>Pen</button>
-				<button onClick={ () => this.handleTool(tools.TOOL_ERASER)}>Eraser</button>
-				<button onClick={ () => this.handleTool(tools.TOOL_RECT)}>Rectangle</button>
-				<button onClick={ () => this.handleTool(tools.TOOL_CIRCLE)}>Circle</button>
+					tool={this.props.toolType}
+					toolOption={this.props.toolOption}
+					socket={this.state.socket}/>
+				<ToolMenu />
 				<BottomMenu 
 					selectedPage={this.props.selectedPage}
 					pageData={this.props.pageData}
-					pageLength={this.props.pageLength}/>
+					pageLength={this.props.pageLength}
+					socket={this.state.socket}/>
 			</div>
 		)
 	}
@@ -51,10 +56,13 @@ class Board extends React.Component {
 const mapStateToProps = (state) => ({
 	selectedPage: state.Paints.get('selectedPage'),
 	pageLength: state.Paints.get('pageLength'),
-	pageData: state.Paints.get('pageData')
+	pageData: state.Paints.get('pageData'),
+	toolType: state.Tools.get('toolType'),
+	toolOption: state.Tools.get('toolOption')
 });
 
 const mapDispatchToProps = (dispatch) => ({
+
 	updatePreview: (pageIndex, preview) => dispatch(PageAction.updatePreview({pageIndex, preview})),
 	pushItem: (pageIndex, item) => dispatch(PageAction.pushItem({pageIndex, item}))
 });
