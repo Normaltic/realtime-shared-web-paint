@@ -17,10 +17,24 @@
 	left: 0;
 	bottom: 0;
 	width: 80%;
+	height: 143px;
 	background: #090909;
 	background: rgba(03,03,03,0.6);
 	white-space: nowrap;
 	overflow-x: auto;
+	overflow-y: hidden;
+
+	transition: height 0.5s;
+}
+
+.BottomMenu_ToggleBtn {
+	position: fixed;
+	left: 10%;
+	width: 4%;
+	height: 3%;
+	background: rgba(03,03,03,0.6);
+	
+	transition: bottom 0.5s;
 }
 
 .BottomMenu_addPage {
@@ -31,7 +45,7 @@
 }
 
 .PreviewImgTag {
-	background: white;
+	background-size: cover;
 	margin-left: 2%;
 	margin-right: 2%;
 	margin-top: 2%;

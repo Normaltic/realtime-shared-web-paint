@@ -18,7 +18,7 @@ export const toolMap = {
 	[TOOL_CIRCLE]: Circle
 };
 
-const defaultBackground = require('../../Images/common/board.png');
+//const defaultBackground = require('../../Images/common/board.png');
 
 class Canvas extends React.Component {
 
@@ -60,11 +60,6 @@ class Canvas extends React.Component {
 	}
 
 	componentWillReceiveProps( nextProps ) {
-//		items.filter( item => this.props.items.indexOf(item) === -1 )
-//			 .forEach( item => {
-//				 this.initTool(item.tool);
-//				 this.tool.reDrawWithData(item, this.props.animate);
-//			 });
 		if( nextProps.selectedPage != this.props.selectedPage ) {
 			let pageIndex = nextProps.selectedPage;
 			this.canvasContext.clearRect(0,0,this.canvas.width,this.canvas.height);
@@ -80,19 +75,10 @@ class Canvas extends React.Component {
 		let { wSocket } = this.state;
 
 		wSocket.on('getonDrawData', (data) => {
-			if( data.pageIndex === this.props.selectedPage ) {
+			if( data.pageIndex == this.props.selectedPage )
 				this.toolList[data.tool].drawLine(data, data.points[0], data.points[1]);
-				let imageData = this.canvas.toDataURL();
-			}
-//			let anotherTool = this.props.toolMap[data.tool](this.canvasContext);
-//			anotherTool.drawLine(data, data.points[0], data.points[1]);
-			
-//			if( !this.anothertool || ( this.anothertool.getToolType() != data.tool ) )
-//				this.anothertool = this.props.toolMap[data.tool](this.canvasContext);
-//			console.warn(this.anothertool);
-//			console.warn(this.anothertool.getToolType());
-//			this.anothertool.drawLine(data, data.points[0], data.points[1]);
 		});
+
 		wSocket.on('getonDrawItem', (data) => {
 			
 			let preViewData = null;

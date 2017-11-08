@@ -11,6 +11,8 @@ import tools from './Canvas/tools';
 import BottomMenu from './BottomMenu/MenuContainer';
 import ToolMenu from './ToolMenu/ToolMenu';
 
+import './Board.css';
+
 class Board extends React.Component {
 	
 	constructor(props) {
@@ -33,7 +35,7 @@ class Board extends React.Component {
 
 	render() {
 		return (
-			<div style={{width: '100%', heigth: '100%'}}>
+			<div className="Smart_Board">
 				<Canvas
 					selectedPage={this.props.selectedPage}
 					pageData={this.props.pageData}

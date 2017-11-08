@@ -1,7 +1,7 @@
 import { Map } from 'immutable';
 import { createAction, handleActions } from 'redux-actions';
 
-const defaultBackGround = require('../Images/common/board.png');
+const defaultBackGround = require('../Images/Backgrounds/board.png');
 
 const PAGE_CREATE = 'pages/page_create';
 const PAGE_SELECT = 'pages/page_select';

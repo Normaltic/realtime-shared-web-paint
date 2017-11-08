@@ -9,46 +9,21 @@ import { default as Circle, TOOL_CIRCLE } from '../Canvas/tools/Circle';
 class PreView extends React.Component {
 	constructor(props) {
 		super(props);
-	
-		this.toolList = null;
-		this.canvas = null;
-		this.canvasContext = null;
 	}
 
 	componentWillMount() {
-
 	}
 
 	componentDidMount() {
-
-//		this.canvas = findDOMNode(this.canvasRef);
-//		this.canvasContext = this.canvas.getContext('2d');
-//		this.toolList = {
-//			[TOOL_PENCIL]: Pencil(this.canvasContext),
-//			[TOOL_ERASER]: Eraser(this.canvasContext),
-//			[TOOL_RECT]: Rect(this.canvasContext),
-//			[TOOL_CIRCLE]: Circle(this.canvasContext)
-//		};
-
-//		this.props.pageData.item.forEach( (item) => {
-//			this.toolList[item.tool].reDrawWithData(item, false);
-//		});
 	};
 
 	componentDidUpdate() {
-		console.warn(this.props.pageData);
-//		this.props.pageData.item.forEach( (item) => {
-//			this.toolList[item.tool].reDrawWithData(item,false);
-//		});
-		let itemList = this.props.pageData.item;
-//		for( let item of itemList ) {
-//			this.toolList[item.tool].reDrawWithData(item, false);
-//		};
 	};
 
 	render() {
 		return (
-			<img className="PreviewImgTag" 
+			<img className="PreviewImgTag"
+				style={{background: `url(${this.props.pageData.backgroundImg})`}}
 				src={this.props.pageData.preview}
 				onClick={this.props.onClick}
 				width='192' height='108'/>
