@@ -6,6 +6,10 @@ back : socket-io, babel <br />
 
 # Version
 
+## 1.2.1
+Store 구조 변경 <br />
+Undo, Redo 툴 추가 <br />
+
 ## 1.2
 Pen 실시간 공유 딜레이 감소 <br />
 각 툴 상세 옵션 구현, 기초 아이콘 적용 ( 굵기, 색상 ) <br />
