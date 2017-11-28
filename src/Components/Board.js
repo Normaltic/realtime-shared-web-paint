@@ -40,7 +40,12 @@ class Board extends React.Component {
 					selectedPage={this.props.selectedPage}
 					pageData={this.props.pageData}
 					pushItem={this.props.pushItem}
+					undoItem={this.props.undoItem}
+					redoItem={this.props.redoItem}
+					resetItemList={this.props.resetItemList}
 					updatePreview={this.props.updatePreview}
+					setUndoEvent={this.props.setUndoEvent}
+					setRedoEvent={this.props.setRedoEvent}
 					tool={this.props.toolType}
 					toolOption={this.props.toolOption}
 					socket={this.state.socket}/>
@@ -64,9 +69,13 @@ const mapStateToProps = (state) => ({
 });
 
 const mapDispatchToProps = (dispatch) => ({
-
 	updatePreview: (pageIndex, preview) => dispatch(PageAction.updatePreview({pageIndex, preview})),
-	pushItem: (pageIndex, item) => dispatch(PageAction.pushItem({pageIndex, item}))
+	pushItem: (pageIndex, item, mine = undefined) => dispatch(PageAction.pushItem({pageIndex, item, mine})),
+	undoItem: (item) => dispatch(PageAction.undoItem(item)),
+	redoItem: (item) => dispatch(PageAction.redoItem(item)),
+	resetItemList: (pageIndex, itemList) => dispatch(PageAction.resetItemList({pageIndex, itemList})),
+	setUndoEvent: (method) => dispatch(ToolAction.setUndoEvent(method)),
+	setRedoEvent: (method) => dispatch(ToolAction.setRedoEvent(method))
 });
 
 export default connect(mapStateToProps,mapDispatchToProps)(Board);

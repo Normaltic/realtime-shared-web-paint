@@ -6,9 +6,13 @@ import { default as Eraser, TOOL_ERASER } from '../Canvas/tools/Eraser';
 import { default as Rect, TOOL_RECT } from '../Canvas/tools/Rect';
 import { default as Circle, TOOL_CIRCLE } from '../Canvas/tools/Circle';
 
+import Backgrounds from '../../Images/Backgrounds';
+
 class PreView extends React.Component {
 	constructor(props) {
 		super(props);
+
+		this.getBackgroundSrc = this.getBackgroundSrc.bind(this);
 	}
 
 	componentWillMount() {
@@ -20,12 +24,19 @@ class PreView extends React.Component {
 	componentDidUpdate() {
 	};
 
+	getBackgroundSrc(background) {
+		if( background.type == 'basic' ) return Backgrounds[background.img];
+		return background.img;
+	}
+
 	render() {
 		return (
 			<img className="PreviewImgTag"
-				style={{background: `url(${this.props.pageData.backgroundImg})`}}
-				src={this.props.pageData.preview}
-				onClick={this.props.onClick}
+				style={{background: `url(${this.getBackgroundSrc(this.props.pageData.background)})`}}
+				src={this.props.pageData.preview[0]}
+				onMouseDown={this.props.onMouseDown}
+				onMouseMove={this.props.onMouseMove}
+				onMouseUp={this.props.onMouseUp}
 				width='192' height='108'/>
 		)
 	}

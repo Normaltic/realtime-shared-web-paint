@@ -43,10 +43,6 @@ class Canvas extends React.Component {
 		this.setWebSocket = this.setWebSocket.bind(this);	
 		this.emitDrawData = this.emitDrawData.bind(this);
 
-		this.undoEvent = this.undoEvent.bind(this);
-		this.redoEvent = this.redoEvent.bind(this);
-		this.refreshCanvasWithItem = this.refreshCanvasWithItem.bind(this);
-
 		this.state = {
 			wSocket: this.props.socket
 		};
@@ -58,14 +54,9 @@ class Canvas extends React.Component {
 
 		this.canvasContext = this.canvas.getContext('2d');
 		this.previewCanvasContext = this.previewCanvas.getContext('2d');
-		console.warn(this.canvasContext);
 
 		this.setWebSocket();
 		this.setTools();
-		
-		console.warn(window);
-		this.props.setUndoEvent(this.undoEvent);
-		this.props.setRedoEvent(this.redoEvent);
 	}
 
 	componentWillUpdate() {
@@ -76,8 +67,8 @@ class Canvas extends React.Component {
 			let pageIndex = nextProps.selectedPage;
 			this.canvasContext.clearRect(0,0,this.canvas.width,this.canvas.height);
 
-			if( nextProps.pageData[pageIndex-1].items.itemList.length ) {
-				nextProps.pageData[pageIndex-1].items.itemList
+			if( nextProps.pageData[pageIndex-1].item.length ) {
+				nextProps.pageData[pageIndex-1].item
 					.forEach( (item) => this.toolList[item.tool].reDrawWithData(item) );
 			}
 		};
@@ -106,67 +97,8 @@ class Canvas extends React.Component {
 				this.previewCanvasContext.clearRect(0,0,this.previewCanvas.width,this.previewCanvas.height);
 			}
 
-			this.props.pushItem(data.pageIndex, data.item);
+			this.props.pushOtherItem(data.pageIndex, data.item);
 			this.props.updatePreview(data.pageIndex, preViewData);
-		});
-
-		wSocket.on('triggedUndoEvent', (data) => {
-			let { pageIndex, itemCount } = data;
-			let willUndoPageItem = this.props.pageData[pageIndex-1].items.itemList;
-			let startSearch = itemCount < 5 ? 0 : itemCount-5;
-			let imageData = null;
-
-			for( ; startSearch < willUndoPageItem.length; startSearch++ ) {
-				if( itemCount == willUndoPageItem[startSearch].count ) {
-					willUndoPageItem.splice(startSearch, 1);
-					break;
-				}
-			}
-
-			if( this.props.selectedPage == pageIndex ) {
-				this.refreshCanvasWithItem(willUndoPageItem, pageIndex);
-			} else {
-				willUndoPageItem.forEach( (item) => {
-					this.previewTool[item.tool].reDrawWithData(item);
-				});
-				imageData = this.previewCanvas.toDataURL();
-				this.previewCanvasContext.clearRect(0, 0, this.previewCanvas.width, this.previewCanvas.height);
-				this.props.updatePreview(pageIndex, imageData);
-			}
-			
-			this.props.resetItemList(pageIndex, willUndoPageItem);
-
-		});
-
-		wSocket.on('triggedRedoEvent', (data) => {
-			let { pageIndex, itemObject } = data;
-			let willRedoPageItem = this.props.pageData[pageIndex-1].items.itemList;
-			let startSearch = itemObject.count < 5 ? 0 : itemObject.count-5;
-			let imageData = null;
-
-			if( itemObject.count > willRedoPageItem[willRedoPageItem.length-1].count )
-				willRedoPageItem.push(itemObject);
-			else {
-				for( ; startSearch < willRedoPageItem.length; startSearch++ ) {
-					if( itemObject.count < willRedoPageItem[startSearch].count ) {
-						willRedoPageItem.splice(startSearch, 0, itemObject);
-						break;
-					}
-				}
-			}
-
-			if( this.props.selectedPage == pageIndex ) {
-				this.refreshCanvasWithItem(willRedoPageItem, pageIndex);
-			} else {
-				willRedoPageItem.forEach( (item) => {
-					this.previewTool[item.tool].reDrawWithData(item);
-				});
-				imageData = this.previewCanvas.toDataURL();
-				this.previewCanvasContext.clearRect(0, 0, this.previewCanvas.width, this.previewCanvas.height);
-				this.props.updatePreview(pageIndex, imageData);
-			}
-
-			this.props.resetItemList(pageIndex, willRedoPageItem);
 		});
 	}
 
@@ -214,18 +146,6 @@ class Canvas extends React.Component {
 		this.emitDrawData(data);
 	}
 
-	testDown(e) {
-		let { tool, toolOption } = this.props;
-		let { color, size, fillColor = undefined } = toolOption[tool];
-
-		let data = this.toolList[tool].onMouseDown(...this.getCousorPosition(e), color, size, fillColor);
-		this.drawing = true;
-
-		const drawWithPoint = () => {
-			
-		}
-	}
-
 	onMouseUp(e) {
 		let data = this.toolList[this.props.tool].onMouseUp(...this.getCousorPosition(e));
 		let imageData = this.canvas.toDataURL();
@@ -236,7 +156,7 @@ class Canvas extends React.Component {
 
 		this.drawing = false;
 		this.emitDrawData(data);
-		this.props.pushItem(this.props.selectedPage, data[0], true);
+		this.props.pushMyItem(this.props.selectedPage, data[0]);
 		this.state.wSocket.emit('onDrawSendItem', drawData);
 		this.props.updatePreview(this.props.selectedPage, imageData);
 	}
@@ -248,72 +168,6 @@ class Canvas extends React.Component {
 		let data = this.toolList[tool].onMouseDown(...this.getCousorPosition(e), color, size, fillColor);
 		this.drawing = true;
 		this.emitDrawData(data);
-	}
-
-	undoEvent() {
-		console.warn("keke");
-		let { selectedPage, pageData } = this.props;
-		let selectedPageItem = pageData[selectedPage-1].items;
-
-		if( !selectedPageItem.myItem.length ) return;
-
-		let popedMyItemCount = selectedPageItem.myItem.pop();
-		this.state.wSocket.emit('triggerUndoEvent', {pageIndex: selectedPage, itemCount: popedMyItemCount});
-
-		let startSearch = popedMyItemCount < 5 ? 0 : popedMyItemCount-5;
-		let splicedItemList = null;
-
-		for( ; startSearch < selectedPageItem.itemList.length; startSearch++ ) {
-			if( popedMyItemCount == selectedPageItem.itemList[startSearch].count ) {
-				splicedItemList = selectedPageItem.itemList.splice(startSearch, 1)[0]
-				break;
-			}
-		}
-		if( splicedItemList == null ) return;
-		selectedPageItem.undoList.push(splicedItemList);
-		console.warn(selectedPageItem);
-		
-		this.props.undoItem(selectedPageItem);
-		this.refreshCanvasWithItem(selectedPageItem.itemList, selectedPage);
-	}
-
-	redoEvent() {
-		let { selectedPage, pageData } = this.props;
-		let selectedPageItem = pageData[selectedPage-1].items;
-
-		if( !selectedPageItem.undoList.length ) return;
-
-		let popedUndoListItem = selectedPageItem.undoList.pop();
-		console.warn(selectedPageItem);
-		console.warn(popedUndoListItem);
-		this.state.wSocket.emit('triggerRedoEvent', {pageIndex: selectedPage, itemObject: popedUndoListItem});
-
-		let needCount = popedUndoListItem.count;
-
-		if( !selectedPageItem.itemList[selectedPageItem.itemList] || 
-				needCount > selectedPageItem.itemList[selectedPageItem.itemList.length-1].count )
-			selectedPageItem.itemList.push(popedUndoListItem);
-		else {
-			let startSearch = popedUndoListItem.count < 5 ? 0 : popedUndoListItem.count-5;
-			for( ; startSearch < selectedPageItem.itemList.length; startSearch++ ) {
-				if( needCount < selectedPageItem.itemList[startSearch].count ) {
-					selectedPageItem.itemList.splice(startSearch, 0, popedUndoListItem);
-					break;
-				}
-			}
-		}
-		console.warn(selectedPageItem);
-		selectedPageItem.myItem.push(needCount);
-
-		this.props.redoItem(selectedPageItem);
-		this.refreshCanvasWithItem(selectedPageItem.itemList, selectedPage);
-	}
-
-
-	refreshCanvasWithItem(item, pageIndex) {
-		this.canvasContext.clearRect(0, 0, this.canvas.width, this.canvas.height);
-		item.forEach( (item) => this.toolList[item.tool].reDrawWithData(item) );
-		this.props.updatePreview(pageIndex, this.canvas.toDataURL());
 	}
 
 	render() {

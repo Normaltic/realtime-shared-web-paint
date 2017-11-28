@@ -41,6 +41,12 @@ class ToolMenu extends React.Component {
 				'BLUE': require('../../Images/Tools/Shapes/Circle/CIRCLE_BLUE.png'),
 				'YELLOW': require('../../Images/Tools/Shapes/Circle/CIRCLE_YELLOW.png')
 			},
+			'Undo': {
+				default: require('../../Images/Tools/Undo/undo-gray.png')
+			},
+			'Redo': {
+				default: require('../../Images/Tools/Redo/redo-gray.png')
+			},
 			'Dot': {
 				'5': require('../../Images/Tools/Bolds/Dot_Bold1.png'),
 				'10': require('../../Images/Tools/Bolds/Dot_Bold2.png'),
@@ -71,8 +77,7 @@ class ToolMenu extends React.Component {
 		};
 
 		this.state = {
-			is_open: true,
-			closeToolBox: () => {},
+			is_open: false,
 			whitebg: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAAAeCAYAAAA7MK6iAAAAPklEQVRIS+3TsQ0AMAgEMdh/afr0D0XMACBZR9fR9NHdcnhNHjXqmIC4YrTvYtSoYwLiitH6Y3GJKybwX1wD6fcAH1bniBkAAAAASUVORK5CYII="
 		}
 
@@ -82,6 +87,13 @@ class ToolMenu extends React.Component {
 	}
 
 	componentDidMount() {
+
+		let toolmenu = findDOMNode(this.refMap.toolBox.toolMenu);
+		let togglebtn = findDOMNode(this.refMap.toolBox.toggleBtn);
+
+		toolmenu.style.width = '0%';
+		togglebtn.style.right = '0';
+		togglebtn.src = this.iconMap['toggleclose'];
 	}
 
 	handleTools(toolName) {
@@ -225,6 +237,16 @@ class ToolMenu extends React.Component {
 				<div ref={ (ref) => this.refMap.toolBox.toolMenu = ref }
 					 className="ToolMenu" id="ToolMenu" >
 					{ this.toolList.map( (toolName, i) => iconMapping(toolName, i) ) }
+					<img ref={ (ref) => this.refMap.icon['Undo'] = ref }
+						 className="ToolMenu_ToolIcon Undo"
+						 src={this.iconMap['Undo'].default}
+						 width="40" height="40"
+						 onClick={this.props.undoEvent} />
+					<img ref={ (ref) => this.refMap.icon['Redo'] = ref }
+						 className="ToolMenu_ToolIcon Redo"
+						 src={this.iconMap['Redo'].default}
+						 width="40" height="40"
+						 onClick={this.props.redoEvent} />
 				</div>
 				{ this.toolList.map( (toolName, i) => ToolOptionBox(toolName, i) ) }
 			</div>
@@ -234,7 +256,9 @@ class ToolMenu extends React.Component {
 
 const mapStateToProps = state => ({
 	toolType: state.Tools.get('toolType'),
-	toolOption: state.Tools.get('toolOption')
+	toolOption: state.Tools.get('toolOption'),
+	undoEvent: state.Tools.get('undoEvent'),
+	redoEvent: state.Tools.get('redoEvent')
 });
 
 const mapDispatchToProps = dispatch => ({

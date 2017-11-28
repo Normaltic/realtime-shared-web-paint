@@ -5,7 +5,7 @@ const WebpackDevServer = require('webpack-dev-server');
 import webpack from 'webpack';
 
 const server = express();
-const port = 4000;
+const port = 4003;
 
 const config = require('../webpack.config');
 const compiler = webpack(config);
@@ -29,16 +29,28 @@ io.on('connection', (socket) => {
 	});
 	
 	socket.on('onDrawSendItem', (data) => {
-		console.log(data.item.points.length);
+		console.log("Success to Send ItemData");
 		socket.broadcast.emit('getonDrawItem', data);
 	});
 
 	socket.on('SendCreatePage', (data) => {
 		socket.broadcast.emit('getCreatePage', data);
 	});
+
+	socket.on('gettestDrawData', (data) => {
+		socket.broadcast.emit('testDrawData', data);
+	});
+	
+	socket.on('triggerUndoEvent', (data) => {
+		socket.broadcast.emit('triggedUndoEvent', data);
+	});
+
+	socket.on('triggerRedoEvent', (data) => {
+		socket.broadcast.emit('triggedRedoEvent', data);
+	});
 });
 
 const devServer = new WebpackDevServer(compiler, config.devServer);
-devServer.listen(4005, () => {
+devServer.listen(4009, () => {
 	console.log('-----------Client Server has open 4001. ( INFO: Webpack.dev.server )');
 });

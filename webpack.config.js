@@ -15,7 +15,7 @@ module.exports = {
 		host: "0.0.0.0",
         port: 3001,
 		proxy: {
-			"**": "http://0.0.0.0:4000"
+			"**": "http://0.0.0.0:4003"
 		},
         contentBase: __dirname + '/public/',
 		historyApiFallback: true,

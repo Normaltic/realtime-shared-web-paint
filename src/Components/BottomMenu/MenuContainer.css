@@ -27,6 +27,16 @@
 	transition: height 0.5s;
 }
 
+.BottomMenu_previewOption {
+	position: fixed;
+	width: auto;
+	height: auto;
+	top: 0;
+	left: 0;
+	visibility: hidden;
+	background: white;
+}
+
 .BottomMenu_ToggleBtn {
 	position: fixed;
 	left: 10%;
