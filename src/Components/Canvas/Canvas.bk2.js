@@ -20,6 +20,8 @@ export const toolMap = {
 	[TOOL_CIRCLE]: Circle
 };
 
+//const defaultBackground = require('../../Images/common/board.png');
+
 class Canvas extends React.Component {
 
 	constructor(props) {
@@ -199,12 +201,12 @@ class Canvas extends React.Component {
 
 	emitDrawData(data) {
 		if( !data || !data[0] ) return;
+		if( data[0].tool == 'Pencil' && data[0].points.length < 2 ) return;
 
 		let { wSocket } = this.state;
 		let drawData = Object.assign({}, data[0]);
-
+//		drawData.points = drawData.points.slice(-2);
 		if( data[0].tool != 'Pencil' ) drawData.points = drawData.points.slice(-2);
-
 		drawData.pageIndex = this.props.selectedPage;
 		wSocket.emit('onDrawSendData', drawData);
 	};
@@ -239,6 +241,7 @@ class Canvas extends React.Component {
 	}
 
 	undoEvent() {
+		console.warn("keke");
 		let { selectedPage, pageData } = this.props;
 		let selectedPageItem = pageData[selectedPage-1].items;
 
@@ -258,6 +261,7 @@ class Canvas extends React.Component {
 		}
 		if( splicedItemList == null ) return;
 		selectedPageItem.undoList.push(splicedItemList);
+		console.warn(selectedPageItem);
 		
 		this.props.undoItem(selectedPageItem);
 		this.refreshCanvasWithItem(selectedPageItem.itemList, selectedPage);
@@ -270,6 +274,8 @@ class Canvas extends React.Component {
 		if( !selectedPageItem.undoList.length ) return;
 
 		let popedUndoListItem = selectedPageItem.undoList.pop();
+		console.warn(selectedPageItem);
+		console.warn(popedUndoListItem);
 		this.state.wSocket.emit('triggerRedoEvent', {pageIndex: selectedPage, itemObject: popedUndoListItem});
 
 		let needCount = popedUndoListItem.count;
@@ -286,6 +292,7 @@ class Canvas extends React.Component {
 				}
 			}
 		}
+		console.warn(selectedPageItem);
 		selectedPageItem.myItem.push(needCount);
 
 		this.props.redoItem(selectedPageItem);

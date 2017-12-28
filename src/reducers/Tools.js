@@ -90,6 +90,15 @@ export default handleActions({
 		return state.set('toolOption', toolOption);
 	},
 
+	[TOOL_SETTOOLSIZE]: (state, action) => {
+		let { toolType, size } = action.payload;
+		let toolOption = state.get('toolOption');
+
+		toolOption[toolType].size = size;
+
+		return state.set('toolOption', toolOption);
+	},
+
 	[TOOL_SETUNDOEVENT]: (state, action) => {
 		return state.set('undoEvent', action.payload);
 	},
@@ -98,13 +107,4 @@ export default handleActions({
 		return state.set('redoEvent', action.payload);
 	}
 
-/*	[TOOL_SETTOOLSIZE]: (state, action) => {
-		let { toolType, size } = action.payload;
-		let toolOption = state.get('toolOption');
-
-		toolOption[toolType].size = size;
-
-		return state.set('toolOption', toolOption);
-	}
-*/
 }, initialState);

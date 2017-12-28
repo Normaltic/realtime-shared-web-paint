@@ -87,6 +87,7 @@ class ToolMenu extends React.Component {
 	}
 
 	componentDidMount() {
+		console.warn(this.iconMap['Pencil'].default);
 
 		let toolmenu = findDOMNode(this.refMap.toolBox.toolMenu);
 		let togglebtn = findDOMNode(this.refMap.toolBox.toggleBtn);
