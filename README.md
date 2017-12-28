@@ -6,7 +6,7 @@ back : socket-io, babel <br />
 
 # Version
 
-## 1.3
+## 1.3 ( Branch : 1.2.1 - Commit Miss )
 Store 구조 변경 <br />
 Undo, Redo 툴 추가 <br />
 
