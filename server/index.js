@@ -22,7 +22,25 @@ const expressServer = server.listen(port, function () {
 
 const io = require('socket.io')(expressServer);
 io.on('connection', (socket) => {
-	console.log("connected on Client");
+
+	if( socket.BoardSession ) socket.emit('BoardInitialize', socket.BoardSession);
+	else {
+		const sessions = {
+			pageLength: 1,
+			pageData: [
+				{
+					pageIndex: 1,
+					items: {
+						itemCount: 0,
+						itemList: []
+					},
+					preview: '',
+					background: ''
+				}
+			]
+		}
+	}
+
 	socket.on('onDrawSendData', (data) => {
 		console.log(data);
 		socket.broadcast.emit('getonDrawData', data);
