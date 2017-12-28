@@ -6,7 +6,13 @@ back : socket-io, babel <br />
 
 # Version
 
-## 1.2.1
+## 1.4
+Pencil 툴의 곡선이 각이 지는 현상 제거 ( Pencil.js => Pencil.mi.js ) <br />
+Eraser 가 사각형 모양으로 끊기며 지워지는 현상 제거 ( Eraser.js => Eraser.line.js ) <br />
+Redo, Undo 후 다시 그릴때의 순서가 바뀌던 오류 수정 <br />
+소켓 이벤트 핸들링 최적화 진행 <br />
+
+## 1.3 ( Branch : 1.2.1 - Commit Miss )
 Store 구조 변경 <br />
 Undo, Redo 툴 추가 <br />
 
