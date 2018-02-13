@@ -4,10 +4,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "webpack-dev-server --hot --host 0.0.0.0 babel-node --presets=es2015 ./server/index.js",
-    "development": "babel-node --presets=es2015 ./server/index.js",
-    "build": "babel server --out-dir build --presets=es2015 && webpack",
-    "production": "babel server"
+    "clean": "rm -rf build public/bundle.js",
+    "start": "cross-env SERVER_ENV=production node build",
+    "development": "cross-env SERVER_ENV=development babel-node --presets=es2015 ./server/index.js",
+    "build": "babel server --out-dir build --presets=es2015 && webpack"
   },
   "author": "",
   "license": "ISC",
@@ -35,6 +35,7 @@
     "babel-preset-es2015": "^6.24.1",
     "babel-preset-react": "^6.24.1",
     "cross-env": "^5.0.5",
+    "react-hot-loader": "^3.1.3",
     "webpack": "^3.6.0",
     "webpack-dev-server": "^2.9.1"
   }
