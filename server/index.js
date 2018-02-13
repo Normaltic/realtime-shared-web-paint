@@ -7,14 +7,14 @@ import webpack from 'webpack';
 const server = express();
 const port = 4003;
 
-const config = require('../webpack.config');
-const compiler = webpack(config);
 
 server.use('/', express.static(path.resolve(__dirname, '../public')));
 server.get('*', (req, res, next) => {
     if( req.path.split('/')[1] === 'static' ) return next();
     res.sendFile(path.resolve( __dirname, '../public/index.html'));
 })
+
+console.log(process.env.SERVER_ENV);
 
 const expressServer = server.listen(port, function () {
     console.log('server has connected on ' + port);
@@ -68,7 +68,14 @@ io.on('connection', (socket) => {
 	});
 });
 
-const devServer = new WebpackDevServer(compiler, config.devServer);
-devServer.listen(4009, () => {
-	console.log('-----------Client Server has open 4001. ( INFO: Webpack.dev.server )');
-});
+if( process.env.SERVER_ENV == "development" ) {
+
+	const config = require('../webpack.dev.config');
+	const compiler = webpack(config);
+	
+	const devServer = new WebpackDevServer(compiler, config.devServer);
+
+	devServer.listen(4009, () => {
+		console.log('-----------Client Server has open 4001. ( INFO: Webpack.dev.server )');
+	});
+}

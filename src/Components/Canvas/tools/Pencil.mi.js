@@ -15,7 +15,8 @@ export default (context, canvas) => {
 			tool: TOOL_PENCIL,
 			color: color,
 			size: size,
-			points: [{x, y}]
+			points: [{x, y}],
+			identifier: Math.random() * 300
 		};
 
 		mmxCanvasContext.drawImage(canvas, 0,0);
@@ -31,8 +32,10 @@ export default (context, canvas) => {
 	const drawLine = (item) => {
 //		if( item.points.length < 6 ) return;
 		let pointt = item.points;
-		if( pointt.length == 1 ) return;
 		let i;
+		
+		if( pointt.length == 1 ) return;
+
 		context.save();
 		context.lineJoin = 'round';
 		context.lineCap = 'round';
@@ -78,11 +81,13 @@ export default (context, canvas) => {
 	const onMouseUp = (x,y) => {
 		if( !stroke ) return;
 		onMouseMove(x,y);
-		let strokeData = stroke;
-		strokeData.points = points;
+		let strokeData = Object.assign({},stroke);
+//		strokeData.points = points.slice();
+		strokeData.points.push({x:x, y:y});
 		mmxCanvasContext.clearRect(0, 0, 1920, 1080);
 		stroke = null;
 		points = [];
+		console.log(strokeData.points);
 
 		return [strokeData];
 	};

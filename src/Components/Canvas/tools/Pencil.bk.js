@@ -30,11 +30,10 @@ export default (context) => {
 		context.lineWidth = item.size;
 		context.strokeStyle = item.color;
 		context.globalCompositeOperation = 'source-over';
-		context.moveTo(start.x, start.y);
+//		context.moveTo(start.x, start.y);
 		let xx = (start.x + x)/2;
 		let yy = (start.y + y)/2;
-		context.quadraticCurveTo(xx,yy,x,y);
-//		context.lineTo(x,y);
+		context.quadraticCurveTo(start.x,start.y,x,y);
 		context.closePath();
 		context.stroke();
 		context.restore();
@@ -43,7 +42,8 @@ export default (context) => {
 	const onMouseMove = (x,y) => {
 		if( !stroke ) return [];
 		let newPoint = { x, y }
-		drawLine(stroke, stroke.points.slice(-1)[0], newPoint);
+//		if( stroke.points.length % 2 == 0 )
+			drawLine(stroke, stroke.points.slice(-1)[0], newPoint);
 		stroke.points.push(newPoint);
 		points.push(newPoint);
 		

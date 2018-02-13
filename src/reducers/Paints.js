@@ -62,7 +62,6 @@ const pageDataStruct = {
 
 const initialState = Map({
 	selectedPage: 1,
-	copyedPage: 0,
 	pageLength: 1,
 	pageData: [pageDataStruct]
 });

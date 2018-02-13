@@ -30,14 +30,20 @@ class Canvas extends React.Component {
 		this.ws = null;
 		this.toolList = null;
 		this.drawing = false;
+		this.shareTool = {};
 
 		this.onMouseMove = this.onMouseMove.bind(this);
 		this.onMouseUp = this.onMouseUp.bind(this);
 		this.onMouseDown = this.onMouseDown.bind(this);
 
+		this.onTouchStart = this.onTouchStart.bind(this);
+		this.onTouchMove = this.onTouchMove.bind(this);
+		this.onTouchEnd = this.onTouchEnd.bind(this);
+
 		this.setTools = this.setTools.bind(this);
 		this.getBackgroundSrc = this.getBackgroundSrc.bind(this);
 		this.getCousorPosition = this.getCousorPosition.bind(this);
+		this.getTouchPosition = this.getTouchPosition.bind(this);
 		this.setWebSocket = this.setWebSocket.bind(this);	
 		this.emitDrawData = this.emitDrawData.bind(this);
 
@@ -56,12 +62,10 @@ class Canvas extends React.Component {
 
 		this.canvasContext = this.canvas.getContext('2d');
 		this.previewCanvasContext = this.previewCanvas.getContext('2d');
-		console.warn(this.canvasContext);
 
 		this.setWebSocket();
 		this.setTools();
 		
-		console.warn(window);
 		this.props.setUndoEvent(this.undoEvent);
 		this.props.setRedoEvent(this.redoEvent);
 	}
@@ -85,8 +89,18 @@ class Canvas extends React.Component {
 		let { wSocket } = this.state;
 
 		wSocket.on('getonDrawData', (data) => {
-			if( data.pageIndex == this.props.selectedPage )
-				this.toolList[data.tool].drawLine(data);
+			if( data.pageIndex == this.props.selectedPage ) {
+				if( data.type == 'down' ) {
+					this.shareTool[data.identifier] = Pencil(this.canvasContext, this.canvas);
+					this.shareTool[data.identifier].onMouseDown(data.points[0].x, data.points[0].y, data.color, data.size);
+				} else if ( data.type == 'move' ) {
+					this.shareTool[data.identifier].onMouseMove(data.points[data.points.length-1].x, data.points[data.points.length-1].y);
+				} else if ( data.type == 'up' ) {
+					this.shareTool[data.identifier].onMouseUp(data.points[data.points.length-1].x, data.points[data.points.length-1].y);
+					delete this.shareTool[data.identifier];
+				}
+			}
+			//		this.toolList[data.tool].drawLine(data);
 		});
 
 		wSocket.on('getonDrawItem', (data) => {
@@ -189,13 +203,23 @@ class Canvas extends React.Component {
 		return background.img;
 	}
 
+	getTouchPosition(e) {
+		const {top, left} = this.canvas.getBoundingClientRect();
+		return [
+			e.changedTouches['0'].clientX - left,
+			e.changedTouches['0'].clientY - top
+		]
+	}
+
 	getCousorPosition(e) {
+		if( this.is_touch ) return this.getTouchPosition(e);
 		const {top, left} = this.canvas.getBoundingClientRect();
 		return [
 			e.clientX - left,
 			e.clientY - top
 		];
 	};
+
 
 	emitDrawData(data) {
 		if( !data || !data[0] ) return;
@@ -209,12 +233,36 @@ class Canvas extends React.Component {
 		wSocket.emit('onDrawSendData', drawData);
 	};
 
+	onTouchStart(e) {
+		e.preventDefault();
+		this.is_touch = true;
+		this.onMouseDown(e);
+	}
+
+	onTouchMove(e) {
+		console.log(e.changedTouches['0'].clientX);
+		e.preventDefault();
+		this.onMouseMove(e);
+	}
+
+	onTouchEnd(e) {
+		e.preventDefault();
+		this.onMouseUp(e);
+		this.is_touch = false;
+	}
+
 	onMouseMove(e) {
-		let data = this.toolList[this.props.tool].onMouseMove(...this.getCousorPosition(e));
-		this.emitDrawData(data);
+		e.preventDefault();
+		if( this.drawing ) {
+			let data = this.toolList[this.props.tool].onMouseMove(...this.getCousorPosition(e));
+			data[0].type = 'move';
+			this.emitDrawData(data);
+		}
 	}
 
 	onMouseUp(e) {
+		e.preventDefault();
+		this.drawing = false;
 		let data = this.toolList[this.props.tool].onMouseUp(...this.getCousorPosition(e));
 		let imageData = this.canvas.toDataURL();
 		let drawData = {
@@ -222,19 +270,21 @@ class Canvas extends React.Component {
 			pageIndex: this.props.selectedPage,
 		};
 
-		this.drawing = false;
+		data[0].type = 'up';
 		this.emitDrawData(data);
+		delete data[0].type;
 		this.props.pushItem(this.props.selectedPage, data[0], true);
 		this.state.wSocket.emit('onDrawSendItem', drawData);
 		this.props.updatePreview(this.props.selectedPage, imageData);
 	}
 
 	onMouseDown(e) {
+		this.drawing = true;
 		let { tool, toolOption } = this.props;
 		let { color, size, fillColor = undefined } = toolOption[tool];
 
 		let data = this.toolList[tool].onMouseDown(...this.getCousorPosition(e), color, size, fillColor);
-		this.drawing = true;
+		data[0].type = 'down';
 		this.emitDrawData(data);
 	}
 
@@ -306,14 +356,17 @@ class Canvas extends React.Component {
 				<canvas 
 					ref={ (canvas) => { this.canvasRef = canvas; } }
 					className="Canvas"
+
 					onMouseMove={this.onMouseMove}
 					onMouseDown={this.onMouseDown}
 					onMouseUp={ (e) => { if( this.drawing ) this.onMouseUp(e) } }
 					onMouseOut={ (e) => { if( this.drawing ) this.onMouseUp(e) } }
-					onTouchStart={this.onMouseDown}
-					onTouchMove={this.onMouseMove}
-					onTouchEnd={ (e) => { if( this.drawing ) this.onMouseUp(e) } }
-					onTouchCancel={ (e) => { if( this.drawing ) this.onMouseUp(e) } }
+
+					onTouchStart={this.onTouchStart}
+					onTouchMove={this.onTouchMove}
+					onTouchEnd={ (e) => { if( this.drawing ) this.onTouchEnd(e) } }
+					onTouchCancel={ (e) => { if( this.drawing ) this.onTouchEnd(e) } }
+
 					width={this.props.width}
 					height={this.props.height} />
 				<img

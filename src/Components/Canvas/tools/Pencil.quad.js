@@ -35,7 +35,7 @@ export default (context) => {
 		context.moveTo(pointArr[0].x, pointArr[0].y);
 		var c = (pointArr[1].x + pointArr[2].x) / 2,
 			d = (pointArr[1].y + pointArr[2].y) / 2;
-		context.quadraticCurveTo(pointArr[1].x, pointArr[1].y, c,d);
+		context.quadraticCurveTo(pointArr[1].x, pointArr[1].y, c, d);
 		context.moveTo(c,d);
 		context.quadraticCurveTo(pointArr[2].x, pointArr[2].y, pointArr[3].x, pointArr[3].y);
 		context.stroke();
@@ -49,7 +49,7 @@ export default (context) => {
 			if( stroke.points.length == 4 ) {
 				let pointArr = stroke.points.slice(-4);
 				drawLine(stroke, pointArr);
-			} else if ( stroke.points.length % 2 == 0 ) {
+			} else if ( stroke.points.length % 3 == 0 ) {
 				let pointArr = stroke.points.slice(-4);
 				drawLine(stroke, pointArr);
 			}

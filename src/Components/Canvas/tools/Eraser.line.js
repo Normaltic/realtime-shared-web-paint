@@ -22,21 +22,17 @@ export default (context) => {
 		return null;
 	};
 
-	const drawLine = ( item, start, end = undefined ) => {
-		let eraseSize = item.size / 2;
+	const drawLine = ( item, start, end ) => {
 		context.save();
 		context.globalCompositeOperation = 'destination-out';
-
 		context.beginPath();
-		context.arc(end.x, end.y, item.size / 2, 0, 2 * Math.PI);
-		context.fill();
-
+		context.lineJoin = 'round';
+		context.lineCap = 'round';
 		context.lineWidth = item.size;
 		context.beginPath();
 		context.moveTo(start.x, start.y);
 		context.lineTo(end.x, end.y);
 		context.stroke();
-
 		context.restore();
 	};
 
@@ -55,7 +51,8 @@ export default (context) => {
 		if( !stroke ) return;
 		onMouseMove(x,y);
 		points = [];
-		const strokeData = stroke;
+		const strokeData = Object.assign({},stroke);
+		strokeData.points.push({x,y});
 		stroke = null;
 
 		return [strokeData];

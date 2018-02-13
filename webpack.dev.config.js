@@ -3,12 +3,26 @@ var webpack = require('webpack');
 module.exports = {
     entry: [
 		'./src/index.js',
-		'webpack-dev-server/client?http://0.0.0.0:4001',
+		'webpack-dev-server/client?http://0.0.0.0:4009',
+		'webpack/hot/only-dev-server'
 	],
 
     output: {
         path: __dirname + '/public/',
         filename: 'bundle.js'
+    },
+
+    devServer: {
+		inline: true,
+		hot: true,
+		host: "0.0.0.0",
+        port: 4009,
+		proxy: {
+			"**": "http://0.0.0.0:4003"
+		},
+        contentBase: __dirname + '/public/',
+		historyApiFallback: true,
+		disableHostCheck: true
     },
 
     module: {
@@ -19,7 +33,8 @@ module.exports = {
                 exclude: /mode_modules/,
                 query: {
                     cacheDirectory: true,
-                    presets: ['es2015', 'react']
+                    presets: ['es2015', 'react'],
+					plugins: ["react-hot-loader/babel"]
                 }
             },
             {
@@ -34,6 +49,7 @@ module.exports = {
     },
 
 	plugins: [
-		new webpack.optimize.UglifyJsPlugin()
+		new webpack.optimize.UglifyJsPlugin(),
+		new webpack.HotModuleReplacementPlugin()
 	]
 };
