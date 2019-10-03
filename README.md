@@ -37,7 +37,6 @@
 * React
 * Redux - [ducks](https://velopert.com/3358)구조 사용( + redux-actions )
 * webpack
-* [MaterializeCSS](https://materializecss.com/)
 ### Server
 * node.js
 * socket.io
